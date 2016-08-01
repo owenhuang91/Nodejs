@@ -1,0 +1,40 @@
+﻿doctype html
+html
+  head
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    title Charge System
+    link(rel='stylesheet', type='text/css', href='/stylesheets/bootstrap.min.css')
+    link(rel='stylesheet', type='text/css', href='/stylesheets/style.css')
+    script(src='/javascripts/modernizr-2.6.2.js')
+    link(rel='stylesheet', href='http://cdn.datatables.net/1.10.2/css/jquery.dataTables.min.css')
+    script(src='/javascripts/jquery-1.10.2.js')
+    script(src='/javascripts/bootstrap.js')
+    script(src='/javascripts/respond.js')
+    script(type='text/javascript', src='http://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js')
+    style.
+      .error{
+      border-color:red;
+      }
+
+
+  body
+    .navbar.navbar-inverse.navbar-fixed-top
+      .container
+        .navbar-header          
+          a.navbar-brand(href='/') Charge System
+        .navbar-collapse.collapse
+          ul.nav.navbar-nav
+            li
+              a(href='/ChargeType') ChargeType
+            li
+              a(href='/contact') Contact
+    .container.body-content
+      block content
+      hr
+      footer
+        p &copy; #{year} - My Express Application
+    
+   
+    block scripts
+    

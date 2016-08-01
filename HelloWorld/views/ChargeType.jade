@@ -1,0 +1,123 @@
+extends layout
+
+block content
+  h1.page-header Charge Type
+  button.btn.btn-primary#ChargeTypeAdd(style='margin-bottom:20px') Add
+
+  table#myTable.table.table-striped
+      thead
+        tr
+          th No
+          th MainType
+          th SubType
+          th Description
+      tbody
+       -var foo = 0
+       for item in ChargeTypeData
+         - foo=foo+1
+         tr
+            td #{foo}
+            td #{item.MAIN_TYPE}
+            td #{item.SUB_TYPE}
+            td #{item.DESCRIPTION}
+      
+
+
+
+  #ChargeTypeDialog.modal.fade
+      .modal-dialog(style='width:400px')
+        .modal-content
+          .modal-header
+            button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
+            h4.modal-title Add Charge Type 
+          .modal-body
+                input#MainType.form-control(type='text',placeholder='MainType', aria-describedby='basic-addon1',style='margin-bottom: 10px')
+                div(style='margin-bottom: 10px;height:15px;color:red;padding-left:5px')
+                input#SubType.form-control(type='text',placeholder='SubType', aria-describedby='basic-addon1',style='margin-bottom: 10px')
+                div(style='margin-bottom: 10px;height:15px;color:red;padding-left:5px')
+                textarea#Description.form-control(placeholder='Description',name='Description',style='margin-bottom: 6px')
+                div(style='margin-bottom: 10px;height:15px;color:red;padding-left:5px')
+                p.text-warning
+                    small If you don't save, your changes will be lost.
+          .modal-footer
+            button.btn.btn-default(type='button', data-dismiss='modal') Close
+            button#ChargeTypeSave.btn.btn-primary(type='button') Save
+
+block scripts
+  script.
+    var urlCreate='/ChargeTypeCreate';
+    var urlModify='/ChargeTypeModify';
+    var urlDelete='/ChargeTypeDelete';
+    
+    $(document).on('click','#ChargeTypeAdd',ChargeTypeDialog);
+    $(document).on('click','#ChargeTypeSave',CreateChargeType);
+    //$('#ChargeTypeDialog').on('hidden.bs.modal', function () { alert("dialog close");});
+    $(document).ready(function(){
+        $('#myTable').dataTable();
+    });
+    function ChargeTypeDialog(){
+        $('#MainType').val("");
+        $('#SubType').val("");
+        $('#Description').val("");
+       
+        $('#MainType').prop( "disabled", false );
+        $('#SubType').prop( "disabled", false );
+        $('#Description').prop( "disabled", false );
+             
+        $("#ChargeTypeDialog").modal('show');
+    }
+    function CreateChargeType(){
+
+        var mainTypeResult=LengthValidate(1,45,"MainType");
+        var subTypeResult=LengthValidate(1,45,"SubType");
+        var descriptionTypeResult=LengthValidate(1,200,"Description");
+        if(!mainTypeResult||!subTypeResult||!descriptionTypeResult){
+            return false;
+        }
+
+        var mainType=$('#MainType').val();
+        var subType=$('#SubType').val();
+        var description=$('#Description').val();
+       
+
+        $.ajax({
+            type: "POST",
+            url: urlCreate,
+            data: {"MainType":mainType,"SubType":subType,"Description":description},
+            success: function(result,message){
+                debugger;
+                alert(result.returnMessage);
+                if(result.updateflag){
+                    $("#ChargeTypeDialog").modal('hide');
+                }
+                
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+                alert("Something error,please contact admn.")
+            },
+        });
+    }
+    function LengthValidate(start,end,id)
+    {
+        var rgxString="^.{"+start+","+end+"}$";
+        var rgx = new RegExp(rgxString);
+        var $field=$('#'+id);
+        if(rgx.test($field.val())){
+             $field.removeClass('error');
+             $field.next().text("");
+             return true;
+        }
+        else{
+            $field.addClass('error');
+            $field.next().text("Please input "+start+"-"+end+" length text");
+            return false;
+        }
+        
+    }
+
+    
+
+
+
+
