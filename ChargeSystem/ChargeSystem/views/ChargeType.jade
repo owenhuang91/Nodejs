@@ -8,18 +8,27 @@ block content
       thead
         tr
           th No
+          th Maintain
           th MainType
           th SubType
           th Description
+ 
       tbody
        -var foo = 0
        for item in ChargeTypeData
          - foo=foo+1
          tr
             td #{foo}
+            td 
+             button.btn.btn-primary.ChargeTypeModify Modify
             td #{item.MAIN_TYPE}
             td #{item.SUB_TYPE}
             td #{item.DESCRIPTION}
+
+
+            td #{item.ID}
+            td #{item.LAST_UPDATED_TIMESTAMP}
+
       
 
 
@@ -39,6 +48,8 @@ block content
                 div(style='margin-bottom: 10px;height:15px;color:red;padding-left:5px')
                 p.text-warning
                     small If you don't save, your changes will be lost.
+                input#TypeID(style='display:none')
+                input#Timestamp(style='display:none')
           .modal-footer
             button.btn.btn-default(type='button', data-dismiss='modal') Close
             button#ChargeTypeSave.btn.btn-primary(type='button') Save
@@ -51,9 +62,24 @@ block scripts
     
     $(document).on('click','#ChargeTypeAdd',ChargeTypeDialog);
     $(document).on('click','#ChargeTypeSave',CreateChargeType);
-    //$('#ChargeTypeDialog').on('hidden.bs.modal', function () { alert("dialog close");});
+    $(document).on('click','.ChargeTypeModify',ModifyChargeType);
+
+
     $(document).ready(function(){
-        $('#myTable').dataTable();
+        $('#myTable').dataTable({
+        "columnDefs": [
+            {
+                "targets": [ 5 ],
+                "visible": false,
+                "searchable": false
+            },
+            {
+                "targets": [ 6 ],
+                "visible": false,
+                "searchable": false
+            }
+        ]
+    } );
     });
     function ChargeTypeDialog(){
         $('#MainType').val("");
@@ -85,7 +111,6 @@ block scripts
             url: urlCreate,
             data: {"MainType":mainType,"SubType":subType,"Description":description},
             success: function(result,message){
-                debugger;
                 alert(result.returnMessage);
                 if(result.updateflag){
                     $("#ChargeTypeDialog").modal('hide');
@@ -97,6 +122,16 @@ block scripts
                 alert("Something error,please contact admn.")
             },
         });
+    }
+    function ModifyChargeType()
+    {
+        var cellData = $('#myTable').DataTable().row(this.parentElement.parentElement).data();
+        $('#MainType').val(cellData[2]);
+        $('#SubType').val(cellData[3]);
+        $('#Description').val(cellData[4]);
+        $('#TypeID').val(cellData[5]);
+        $('#Timestamp').val(cellData[6]);
+        $("#ChargeTypeDialog").modal('show');
     }
     function LengthValidate(start,end,id)
     {

@@ -2,7 +2,7 @@
 var DBOption = {
     host: 'localhost',
     user: 'root',
-    password: '',
+    password: '1qaz2wsx',
     database: 'charge',
     port: 3306
 };
