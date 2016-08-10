@@ -31,10 +31,11 @@ if ('development' == app.get('env')) {
 //Open Page
 app.get('/', routes.index);
 app.get('/ChargeType', routes.ChargeType);
-app.get('/contact', routes.contact);
 
 //Maintain Data
 app.post('/ChargeTypeCreate', routes.ChargeTypeCreate);
+app.post('/ChargeTypeDelete', routes.ChargeTypeDelete);
+app.get('/ChargeTypeReload', routes.ChargeTypeReload);
 
 http.createServer(app).listen(app.get('port'), function () {
     console.log('Express server listening on port ' + app.get('port'));

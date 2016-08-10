@@ -4,7 +4,8 @@ var DBOption = {
     user: 'root',
     password: '1qaz2wsx',
     database: 'charge',
-    port: 3306
+    port: 3306,
+    dateStrings: 'DATETIME'
 };
 var connection = mySQL.createConnection(DBOption);
 /*
@@ -24,6 +25,15 @@ exports.ChargeType = function (req, res) {
 
 };
 
+exports.ChargeTypeReload = function (req, res) {
+    connection.query("SELECT * FROM CHARGE_TYPE ORDER BY MAIN_TYPE,SUB_TYPE", function (err, rows, fields) {
+        if (err) throw err;
+        else res.send({ ChargeTypeData: rows });
+    });
+    
+
+};
+
 exports.ChargeTypeCreate = function (req, res) {
     var insertSQL = [' INSERT INTO CHARGE_TYPE (MAIN_TYPE, SUB_TYPE,DESCRIPTION,LAST_UPDATED_TIMESTAMP) ',
         ' VALUES(?,?,?,NOW()) '].join('');
@@ -34,7 +44,13 @@ exports.ChargeTypeCreate = function (req, res) {
     });
 };
 
-exports.contact = function (req, res) {
-    res.render('contact', { title: 'Contact', year: new Date().getFullYear(), message: 'Your contact page' });
+exports.ChargeTypeDelete = function (req, res) {
+    var deleteSQL = [' DELETE FROM CHARGE_TYPE ',
+        ' WHERE ID=? AND LAST_UPDATED_TIMESTAMP=? '].join('');
+    
+    connection.query(deleteSQL, [req.body.ID, req.body.Timestamp] , function (err, rows, fields) {
+        if (err) throw err;
+        else res.send({ updateflag: true, returnMessage: "Delete successful." });
+    });
 };
 

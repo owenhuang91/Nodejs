@@ -3,24 +3,23 @@
 block content
   h1.page-header Charge Type
   button.btn.btn-primary#ChargeTypeAdd(style='margin-bottom:20px') Add
-
-  table#myTable.table.table-striped
+  #DataTable
+   table#myTable.table.table-striped
       thead
         tr
-          th No
           th Maintain
           th MainType
           th SubType
           th Description
  
       tbody
-       -var foo = 0
        for item in ChargeTypeData
-         - foo=foo+1
          tr
-            td #{foo}
             td 
-             button.btn.btn-primary.ChargeTypeModify Modify
+              a
+               span.glyphicon.glyphicon-pencil.ChargeTypeModify(style='margin-left:20px')
+              a
+               span.glyphicon.glyphicon-remove.ChargeTypeDelete(style='margin-left:20px')
             td #{item.MAIN_TYPE}
             td #{item.SUB_TYPE}
             td #{item.DESCRIPTION}
@@ -59,22 +58,22 @@ block scripts
     var urlCreate='/ChargeTypeCreate';
     var urlModify='/ChargeTypeModify';
     var urlDelete='/ChargeTypeDelete';
-    
+    var urlReload='/ChargeTypeReload';
     $(document).on('click','#ChargeTypeAdd',ChargeTypeDialog);
     $(document).on('click','#ChargeTypeSave',CreateChargeType);
     $(document).on('click','.ChargeTypeModify',ModifyChargeType);
-
+    $(document).on('click','.ChargeTypeDelete',DeleteChargeType);
 
     $(document).ready(function(){
         $('#myTable').dataTable({
         "columnDefs": [
             {
-                "targets": [ 5 ],
+                "targets": [ 4 ],
                 "visible": false,
                 "searchable": false
             },
             {
-                "targets": [ 6 ],
+                "targets": [ 5 ],
                 "visible": false,
                 "searchable": false
             }
@@ -113,7 +112,7 @@ block scripts
             success: function(result,message){
                 alert(result.returnMessage);
                 if(result.updateflag){
-                    $("#ChargeTypeDialog").modal('hide');
+                    location.reload();
                 }
                 
             },
@@ -125,13 +124,34 @@ block scripts
     }
     function ModifyChargeType()
     {
-        var cellData = $('#myTable').DataTable().row(this.parentElement.parentElement).data();
-        $('#MainType').val(cellData[2]);
-        $('#SubType').val(cellData[3]);
-        $('#Description').val(cellData[4]);
-        $('#TypeID').val(cellData[5]);
-        $('#Timestamp').val(cellData[6]);
+        var cellData = $('#myTable').DataTable().row($(this).parents('tr')).data();
+        $('#MainType').val(cellData[1]);
+        $('#SubType').val(cellData[2]);
+        $('#Description').val(cellData[3]);
+        $('#TypeID').val(cellData[4]);
+        $('#Timestamp').val(cellData[5]);
         $("#ChargeTypeDialog").modal('show');
+    }
+    function DeleteChargeType()
+    {
+        var $thisRow=$('#myTable').DataTable().row($(this).parents('tr'))
+        var cellData = $thisRow.data();
+        $.ajax({
+            type: "POST",
+            url: urlDelete,
+            data: {"ID":cellData[4],"Timestamp":cellData[5]},
+            success: function(result,message){
+                alert(result.returnMessage);
+                if(result.updateflag){
+                     $thisRow.remove().draw( false );
+                }
+                
+            },
+            error: function(jqXHR, textStatus, errorThrown) {
+                console.log(textStatus, errorThrown);
+                alert("Something error,please contact admn.")
+            },
+        });
     }
     function LengthValidate(start,end,id)
     {
